@@ -1,0 +1,21 @@
+{
+    "name": "phorax/activecollab-api-enhancement",
+    "description": "Missing feature for activeCollab API",
+    "type": "project",
+    "license": "GPL2",
+    "authors": [
+        {
+            "name": "PHORAX",
+            "email": "hello@phorax.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Phorax\\ActiveCollabApi\\": "src/Phorax/ActiveCollabApi/Classes"
+        }
+    },
+    "require": {
+        "symfony/dotenv": "^4.0",
+        "nikic/fast-route": "^1.3"
+    }
+}
