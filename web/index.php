@@ -17,11 +17,22 @@ $GLOBALS['db'] = new \PDO(
 
 // Authentication
 if (!isset($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN']) || empty($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN'])) {
-    die('HTTP_X_ANGIE_AUTHAPITOKEN missing.');
+    http_response_code(400);
+    echo json_encode([ 'error' => 'HTTP_X_ANGIE_AUTHAPITOKEN missing' ]);
+    exit;
 }
-#$apiToken = filter_var($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN'], FILTER_SANITIZE_STRING);
-#$query = $GLOBALS['db']->prepare('SELECT COUNT(*) FROM api_subscriptions WHERE `token_id` = "' . $apiToken . '"');
-#$result = $query->execute();
+
+$authApiToken = filter_var($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN'], FILTER_SANITIZE_STRING);
+/** @var \PDOStatement $statement */
+$statement = $GLOBALS['db']->prepare('SELECT COUNT(*) AS total FROM api_subscriptions WHERE CONCAT(user_id, "-", token_id) = :token');
+$statement->bindParam('token', $authApiToken);
+$statement->execute();
+$apiTokenResult = $statement->fetch();
+if (intval($apiTokenResult['total']) !== 1) {
+    http_response_code(403);
+    echo json_encode([ 'error' => 'HTTP_X_ANGIE_AUTHAPITOKEN invalid' ]);
+    exit;
+}
 
 // Dispatch
 $dispatcher = \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) {
