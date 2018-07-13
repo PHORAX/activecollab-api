@@ -51,14 +51,15 @@ $uri = rawurldecode($uri);
 
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
-    case FastRoute\Dispatcher::NOT_FOUND:
-        die('Not found');
-        break;
-    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-        $allowedMethods = $routeInfo[1];
-        die('Not allowed');
-        break;
-    case FastRoute\Dispatcher::FOUND:
+    case FastRoute\Dispatcher::NOT_FOUND: {
+        http_response_code(404);
+        exit;
+    }
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED: {
+        http_response_code(403);
+        exit;
+    }
+    case FastRoute\Dispatcher::FOUND: {
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
 
@@ -72,6 +73,7 @@ switch ($routeInfo[0]) {
                 return;
             } else {
                 http_response_code(400);
+                echo json_encode([ 'error' => 'HTTP_X_ANGIE_AUTHAPITOKEN missing' ]);
                 exit;
             }
         } else {
@@ -79,4 +81,5 @@ switch ($routeInfo[0]) {
             exit;
         }
         break;
+    }
 }
