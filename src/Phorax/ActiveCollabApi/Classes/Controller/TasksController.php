@@ -19,6 +19,8 @@ class TasksController {
             exit;
         }
 
+        /* @TODO: Check privileges */
+
         $query = 'SELECT id AS id, project_id AS project FROM tasks WHERE id = :id LIMIT 1';
         /** @var \PDOStatement $statement */
         $statement = $GLOBALS['db']->prepare($query);
