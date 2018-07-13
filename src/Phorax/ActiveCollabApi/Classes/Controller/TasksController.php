@@ -13,11 +13,18 @@ class TasksController {
      * @return array
      */
     public function getAction($options): array {
-        $taskId = $options['id'];
-        $query = 'SELECT id, project_id AS project FROM tasks WHERE id = ? LIMIT 1';
+        if (!intval($options['id'])) {
+            http_response_code(403);
+            echo json_encode([ 'error' => 'ticket.id invalid' ]);
+            exit;
+        }
+
+        $query = 'SELECT id AS id, project_id AS project FROM tasks WHERE id = :id LIMIT 1';
+        /** @var \PDOStatement $statement */
         $statement = $GLOBALS['db']->prepare($query);
-        $statement->execute([ $taskId ]);
-        $task = $statement->fetch();
+        $statement->bindParam(':id', $options['id']);
+        $statement->execute();
+        $task = $statement->fetch(\PDO::FETCH_ASSOC);
         return ($task === false) ? [] : $task;
     }
 }
