@@ -18,19 +18,19 @@ $GLOBALS['db'] = new \PDO(
 // Authentication
 if (!isset($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN']) || empty($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN'])) {
     http_response_code(400);
-    echo json_encode([ 'error' => 'HTTP_X_ANGIE_AUTHAPITOKEN missing' ]);
+    echo json_encode([ 'error' => 'X-Angie-AuthApiToken header missing' ]);
     exit;
 }
 
 $authApiToken = filter_var($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN'], FILTER_SANITIZE_STRING);
 /** @var \PDOStatement $statement */
-$statement = $GLOBALS['db']->prepare('SELECT COUNT(*) AS total FROM api_subscriptions WHERE CONCAT(user_id, "-", token_id) = :token');
+$statement = $GLOBALS['db']->prepare('SELECT user_id FROM api_subscriptions WHERE CONCAT(user_id, "-", token_id) = :token');
 $statement->bindParam('token', $authApiToken);
 $statement->execute();
 $apiTokenResult = $statement->fetch();
-if (intval($apiTokenResult['total']) !== 1) {
+if ($statement->rowCount() !== 1) {
     http_response_code(403);
-    echo json_encode([ 'error' => 'HTTP_X_ANGIE_AUTHAPITOKEN invalid' ]);
+    echo json_encode([ 'error' => 'X-Angie-AuthApiToken header invalid' ]);
     exit;
 }
 
