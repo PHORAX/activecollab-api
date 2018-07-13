@@ -24,15 +24,24 @@ if (!isset($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN']) || empty($_SERVER['HTTP_X_ANGI
 
 $authApiToken = filter_var($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN'], FILTER_SANITIZE_STRING);
 /** @var \PDOStatement $statement */
-$statement = $GLOBALS['db']->prepare('SELECT user_id FROM api_subscriptions WHERE CONCAT(user_id, "-", token_id) = :token');
+$statement = $GLOBALS['db']->prepare(
+    'SELECT user_id
+    FROM api_subscriptions
+    INNER JOIN users
+    ON api_subscriptions.user_id = users.id
+    WHERE CONCAT(user_id, "-", token_id) = ":token"
+    AND users.archived_on IS NULL
+    AND users.is_trashed = 0
+    AND users.trashed_on IS NULL
+    AND users.is_archived = 0'
+);
 $statement->bindParam('token', $authApiToken);
-$statement->execute();
-$GLOBALS['user'] = $statement->fetch(\PDO::FETCH_ASSOC);
-if ($statement->rowCount() !== 1) {
+if ($statement->execute() === false) {
     http_response_code(403);
     echo json_encode([ 'error' => 'X-Angie-AuthApiToken header invalid' ]);
     exit;
 }
+$GLOBALS['user'] = $statement->fetch(\PDO::FETCH_ASSOC);
 
 // Dispatch
 $dispatcher = \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) {
