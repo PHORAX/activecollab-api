@@ -27,7 +27,7 @@ $authApiToken = filter_var($_SERVER['HTTP_X_ANGIE_AUTHAPITOKEN'], FILTER_SANITIZ
 $statement = $GLOBALS['db']->prepare('SELECT user_id FROM api_subscriptions WHERE CONCAT(user_id, "-", token_id) = :token');
 $statement->bindParam('token', $authApiToken);
 $statement->execute();
-$apiTokenResult = $statement->fetch();
+$GLOBALS['user'] = $statement->fetch(\PDO::FETCH_ASSOC);
 if ($statement->rowCount() !== 1) {
     http_response_code(403);
     echo json_encode([ 'error' => 'X-Angie-AuthApiToken header invalid' ]);
