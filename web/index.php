@@ -10,7 +10,7 @@ $dotenv->load(__DIR__ . '/../.env');
 // Database
 /** @var PDO */
 $GLOBALS['db'] = new \PDO(
-    'mysql://' . $_ENV['ACTIVECOLLAB_DB_HOSTNAME'] . '/' . $_ENV['ACTIVECOLLAB_DB_DATABASE'],
+    'mysql:host=' . $_ENV['ACTIVECOLLAB_DB_HOSTNAME'] . ';dbname=' . $_ENV['ACTIVECOLLAB_DB_DATABASE'],
     $_ENV['ACTIVECOLLAB_DB_USERNAME'],
     $_ENV['ACTIVECOLLAB_DB_PASSWORD']
 );
