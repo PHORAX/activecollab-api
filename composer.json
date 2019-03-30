@@ -2,7 +2,7 @@
     "name": "phorax/activecollab-api",
     "description": "Missing feature for activeCollab API",
     "type": "project",
-    "license": "GPL2",
+    "license": "MIT",
     "authors": [
         {
             "name": "PHORAX",
