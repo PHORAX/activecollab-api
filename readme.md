@@ -24,6 +24,6 @@ Send `X-Angie-AuthApiToken` header with your [API key](https://developers.active
 
 ## Endpoints
 
-### tasks/{id}
+### GET tasks/{id}
 
 Retrieve project id.
